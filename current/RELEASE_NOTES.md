@@ -1,3 +1,15 @@
+# v13.2
+
+新增 W&R Performance 工作表，依 Scan、March 等 Pattern 分表，並列已匯入 WT 的 W、R、RW、X Chip 百分比。
+
+每顆 Chip 在同一 WT、Pattern、類別最多計一次。分母為全部 Raw Chip 扣除 WT1 Cat C10、C11、C14、C15、C16、C17。右側四欄只顯示百分比。Lot 使用前六碼，Wafer 顯示 #01 格式。
+
+匯入並分析與 Refresh Maps 自動更新。Calibri 11 置中、兩層表頭與分類配色。
+
+已以原生 Excel 驗證 1～3 份合成 ASC 完整匯入、3-to-1 重跑、六個 Config 指定巨集、Wafer Maps 雙擊至 BLK Pattern Distribution、DC Cat 排除、去重、零分母及儲存重開。
+
+---
+
 # Wafer ASC 分析 v0.26.0
 
 [下載正式 VBA Excel](https://github.com/QooLien/asc-wafer-fail-address/releases/download/v0.26.0/ASC_Wafer_Analysis_Map_Layout.xlsm) · [下載64顆Chip Demo](https://github.com/QooLien/asc-wafer-fail-address/releases/download/v0.26.0/ASC_Wafer_Analysis_Map_Layout_Demo64.xlsm) · [下載完整套件](https://github.com/QooLien/asc-wafer-fail-address/releases/download/v0.26.0/ASC_Wafer_Analysis_Map_Layout_Latest.zip)

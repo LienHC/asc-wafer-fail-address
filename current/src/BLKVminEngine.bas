@@ -1302,6 +1302,7 @@ End Sub
 
 Public Sub BLK_ClearChipMonitorMap(ByVal wb As Workbook)
     Dim ws As Worksheet
+    WRPerformance.Invalidate wb
     On Error Resume Next
     Set ws = wb.Worksheets("W&R Map")
     If Not ws Is Nothing Then ws.UsedRange.UnMerge: ws.UsedRange.Clear
@@ -1656,6 +1657,7 @@ Public Sub BLK_PublishReports(ByVal wb As Workbook)
     BLK_BuildIntegratedAnalysis wb
     BLK_BuildImportInfo wb
     BLK_BuildUnifiedMaps wb
+    WRPerformance.BuildReport wb
     BLK_BuildCatWaferMap wb
     BLK_BuildChipVminMap wb
     BLK_OrderSheets wb
