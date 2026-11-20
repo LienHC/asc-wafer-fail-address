@@ -1,10 +1,10 @@
-# SRAM Extra BLK Failure Analysis v13.2
+# SRAM Extra BLK Failure Analysis v13.3
 
-[下載完整 VBA Excel](https://github.com/QooLien/asc-wafer-fail-address/releases/download/v13.2/SRAM.Extra.BLK.Failure.Analysis_v13.2.xlsm)
+[下載完整 VBA Excel](current/templates/SRAM%20Extra%20BLK%20Failure%20%20Analysis_v13.3.xlsm?raw=true)
 
-新增 W&R Performance，依 Scan／March 等 Pattern 分表，並列已匯入 WT 的 W、R、RW、X Chip 百分比。分母為 Raw 全部 Chip 扣除 WT1 Cat C10／C11／C14／C15／C16／C17，每顆 Chip 在每個類別只計一次。右側四欄僅顯示百分比。
+新增 `Scan W-R Performance` 工作表。每個 WT 顯示 W、R、W/R 和四種組合的 Fail Chips、DC Pass Count 與百分比。分母為 Raw Chip 顆數扣除該 WT 的 Scan Wafer Map 灰底 Chip。原有 `W&R Performance` 同時提供各 Pattern 的 W、R、RW、X、15 種精確組合及圖表。
 
-「匯入並分析」與「Refresh Maps」完成後自動更新。格式採 Calibri 11 置中，欄位配置沿用已確認的兩層表頭。詳見 [W/R Performance 說明](current/docs/WR_PERFORMANCE.md)。
+「匯入並分析」與「Refresh Maps」完成後自動更新兩張報表。詳見 [W/R Performance 說明](current/docs/WR_PERFORMANCE.md)。
 
 ---
 

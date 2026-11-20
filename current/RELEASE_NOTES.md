@@ -1,3 +1,11 @@
+# v13.3
+
+新增 `Scan W-R Performance`。每個已產生 Scan Map 的 WT 都有七欄百分比、各欄 Fail Chips 顆數和 DC Pass Count。灰底 Chip 從分子和分母排除。
+
+`W&R Performance` 保留 W、R、RW、X 獨立計數，並列 15 種精確組合的顆數、百分比和圖表。
+
+---
+
 # v13.2
 
 新增 W&R Performance 工作表，依 Scan、March 等 Pattern 分表，並列已匯入 WT 的 W、R、RW、X Chip 百分比。
