@@ -6,6 +6,16 @@ from xml.etree import ElementTree as ET
 from oletools.olevba import VBA_Parser
 r=Path(__file__).resolve().parents[1];p=Path(sys.argv[1]) if len(sys.argv)>1 else r/'templates/SRAM Extra BLK Failure  Analysis_v13.4.xlsm'
 v=VBA_Parser(str(p));modules={n:c for _,_,n,c in v.extract_macros()};v.close()
+def native_source(code):
+    # Excel recases identifiers and normalizes blank lines on native save.
+    # Preserve string literals exactly while comparing case-insensitive VBA.
+    lines = []
+    for line in code.splitlines():
+        if not line.strip():
+            continue
+        pieces = re.split(r'("(?:[^"\n]|"")*")', line.strip())
+        lines.append(''.join(piece if i % 2 else piece.lower() for i, piece in enumerate(pieces)))
+    return lines
 if p.name.endswith('Analysis_v13.4.xlsm'):
     baseline = r / 'templates/SRAM Extra BLK Failure  Analysis_v13.3.xlsm'
     parser = VBA_Parser(str(baseline))
@@ -20,7 +30,10 @@ if p.name.endswith('Analysis_v13.4.xlsm'):
     assert 'BLKVminEngine.BLK_JumpSourceRow' not in events
     expected['ThisWorkbook.cls'] = header + events.replace('\n', '\r\n')
     expected['BLKVminEngine.bas'] = (r / 'src/BLKVminEngine.bas').read_text().replace('\n', '\r\n')
-    assert modules == expected, 'VBA modules differ from v13.3 plus the Source Row fix'
+    assert modules.keys() == expected.keys(), 'Unexpected VBA modules'
+    for name, code in expected.items():
+        assert native_source(modules[name]) == native_source(code), f'Unexpected VBA source change: {name}'
+        assert modules[name].count('Attribute VB_Name =') == 1, f'Duplicate module attribute: {name}'
     for module, member in re.findall(r'\b(BLKVminEngine|ImportFailAddresses)\.(\w+)', events):
         declaration = rf'^Public (?:Sub|Function) {re.escape(member)}\b'
         assert re.search(declaration, modules[f'{module}.bas'], re.IGNORECASE | re.MULTILINE), f'{module}.{member}'
@@ -29,7 +42,7 @@ if p.name.endswith('Analysis_v13.4.xlsm'):
         assert original.namelist() == updated.namelist()
         changed = {part for part in original.namelist() if original.read(part) != updated.read(part)}
         assert changed == {'xl/vbaProject.bin'}, changed
-    print('PASS XLSM v13.4: Source Row event and module are in sync, and other workbook content is preserved.')
+    print('PASS XLSM v13.4: 19 native VBA modules match expected sources; Source Row bindings and non-VBA workbook parts preserved.')
     sys.exit(0)
 
 if p.name.endswith('Analysis_v13.3.xlsm'):

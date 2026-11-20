@@ -1,5 +1,9 @@
 # v13.4
 
+修復 Excel 開啟時「載入 WRPerformance 時發生錯誤」：以原生 Excel 重建 VBA 專案並只替換 `xl/vbaProject.bin`。保留全部 19 個模組的程式邏輯、原有工作表、按鈕及設定。
+
+已在本機 Excel 16.0 實際驗證 W/R 與 Scan W-R 報表、3 WT／2 Pattern、15 種組合、灰底排除、重跑、零分母、報表失效清理、儲存重開及 Source Row 選取事件。測試採合成資料，尚未以公司正式 ASC 執行完整匯入。
+
 修正 Source Row 選取事件的 VBA 跨模組編譯錯誤。選取 Fail Analysis 或 Chip Fail Details 的來源列會跳到 Fail Address 對應列。
 
 ---
