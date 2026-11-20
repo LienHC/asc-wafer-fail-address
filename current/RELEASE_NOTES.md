@@ -1,3 +1,9 @@
+# v13.4
+
+修正 Source Row 選取事件的 VBA 跨模組編譯錯誤。選取 Fail Analysis 或 Chip Fail Details 的來源列會跳到 Fail Address 對應列。
+
+---
+
 # v13.3
 
 新增 `Scan W-R Performance`。每個已產生 Scan Map 的 WT 都有七欄百分比、各欄 Fail Chips 顆數和 DC Pass Count。灰底 Chip 從分子和分母排除。

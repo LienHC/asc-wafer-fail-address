@@ -1,10 +1,37 @@
 from pathlib import Path
+import re
 import sys
 from zipfile import ZipFile
 from xml.etree import ElementTree as ET
 from oletools.olevba import VBA_Parser
-r=Path(__file__).resolve().parents[1];p=Path(sys.argv[1]) if len(sys.argv)>1 else r/'templates/SRAM Extra BLK Failure  Analysis_v13.3.xlsm'
+r=Path(__file__).resolve().parents[1];p=Path(sys.argv[1]) if len(sys.argv)>1 else r/'templates/SRAM Extra BLK Failure  Analysis_v13.4.xlsm'
 v=VBA_Parser(str(p));modules={n:c for _,_,n,c in v.extract_macros()};v.close()
+if p.name.endswith('Analysis_v13.4.xlsm'):
+    baseline = r / 'templates/SRAM Extra BLK Failure  Analysis_v13.3.xlsm'
+    parser = VBA_Parser(str(baseline))
+    try:
+        expected = {name: code for _, _, name, code in parser.extract_macros()}
+    finally:
+        parser.close()
+    old_events = expected['ThisWorkbook.cls']
+    header, _ = old_events.split('Private Sub Workbook_SheetBeforeDoubleClick(', 1)
+    events = (r / 'src/WorkbookMapEvents.vba').read_text()
+    assert 'BLKVminEngine.BLK_SourceRowCell' not in events
+    assert 'BLKVminEngine.BLK_JumpSourceRow' not in events
+    expected['ThisWorkbook.cls'] = header + events.replace('\n', '\r\n')
+    expected['BLKVminEngine.bas'] = (r / 'src/BLKVminEngine.bas').read_text().replace('\n', '\r\n')
+    assert modules == expected, 'VBA modules differ from v13.3 plus the Source Row fix'
+    for module, member in re.findall(r'\b(BLKVminEngine|ImportFailAddresses)\.(\w+)', events):
+        declaration = rf'^Public (?:Sub|Function) {re.escape(member)}\b'
+        assert re.search(declaration, modules[f'{module}.bas'], re.IGNORECASE | re.MULTILINE), f'{module}.{member}'
+    with ZipFile(baseline) as original, ZipFile(p) as updated:
+        assert updated.testzip() is None
+        assert original.namelist() == updated.namelist()
+        changed = {part for part in original.namelist() if original.read(part) != updated.read(part)}
+        assert changed == {'xl/vbaProject.bin'}, changed
+    print('PASS XLSM v13.4: Source Row event and module are in sync, and other workbook content is preserved.')
+    sys.exit(0)
+
 if p.name.endswith('Analysis_v13.3.xlsm'):
     baseline = r / 'templates/SRAM Extra BLK Failure  Analysis_v13.2.xlsm'
     parser = VBA_Parser(str(baseline))
@@ -12,8 +39,13 @@ if p.name.endswith('Analysis_v13.3.xlsm'):
         expected = {name: code for _, _, name, code in parser.extract_macros()}
     finally:
         parser.close()
-    for name in ('WRPerformance.bas', 'BLKVminEngine.bas'):
-        expected[name] = (r / 'src' / name).read_text().replace('\n', '\r\n')
+    expected['WRPerformance.bas'] = (r / 'src/WRPerformance.bas').read_text().replace('\n', '\r\n')
+    engine = modules['BLKVminEngine.bas']
+    before, rest = engine.split('Public Function BLK_SourceRowCell(', 1)
+    _, after = rest.split('Public Sub BLK_PrepareEmptyTemplate(', 1)
+    assert 'Public Sub BLK_JumpSourceRow(' in rest
+    assert before + 'Public Sub BLK_PrepareEmptyTemplate(' + after == (r / 'src/BLKVminEngine.bas').read_text().replace('\n', '\r\n')
+    expected['BLKVminEngine.bas'] = engine
     assert modules == expected, 'VBA modules differ from v13.2 plus the W/R Performance update'
     with ZipFile(baseline) as original, ZipFile(p) as updated:
         assert updated.testzip() is None

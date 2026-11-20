@@ -1,6 +1,6 @@
-# SRAM Extra BLK Failure Analysis v13.3
+# SRAM Extra BLK Failure Analysis v13.4
 
-[下載完整 VBA Excel](current/templates/SRAM%20Extra%20BLK%20Failure%20%20Analysis_v13.3.xlsm?raw=true)
+[下載完整 VBA Excel](current/templates/SRAM%20Extra%20BLK%20Failure%20%20Analysis_v13.4.xlsm?raw=true)
 
 新增 `Scan W-R Performance` 工作表。每個 WT 顯示 W、R、W/R 和四種組合的 Fail Chips、DC Pass Count 與百分比。分母為 Raw Chip 顆數扣除該 WT 的 Scan Wafer Map 灰底 Chip。原有 `W&R Performance` 同時提供各 Pattern 的 W、R、RW、X、15 種精確組合及圖表。
 

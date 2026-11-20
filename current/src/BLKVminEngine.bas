@@ -2221,35 +2221,6 @@ Failed:
     MsgBox "Cannot open Chip Fail Details: " & Err.description, vbExclamation
 End Sub
 
-Public Function BLK_SourceRowCell(ByVal ws As Object, ByVal target As Range) As Boolean
-    Dim table As ListObject, col As ListColumn
-    On Error GoTo Done
-    If TypeName(ws) <> "Worksheet" Or target.CountLarge <> 1 Then Exit Function
-    If ws.name <> "Fail Analysis" And ws.name <> "Chip Fail Details" Then Exit Function
-    If Not IsNumeric(target.Value2) Then Exit Function
-    If Val(CStr(target.Value2)) < 2 Then Exit Function
-    For Each table In ws.ListObjects
-        For Each col In table.ListColumns
-            If col.name = "Source Row" Or col.name = "Source Address Row" Then
-                If Not col.DataBodyRange Is Nothing Then If Not Intersect(target, col.DataBodyRange) Is Nothing Then BLK_SourceRowCell = True: Exit Function
-            End If
-        Next col
-    Next table
-Done:
-End Function
-
-Public Sub BLK_JumpSourceRow(ByVal wb As Workbook, ByVal target As Range)
-    Dim oldEvents As Boolean, row As Long
-    oldEvents = Application.EnableEvents
-    On Error GoTo Done
-    row = CLng(target.Value2)
-    If row < 2 Or row > wb.Worksheets("Fail Address").cells(wb.Worksheets("Fail Address").rows.count, 1).End(xlUp).row Then Exit Sub
-    Application.EnableEvents = False
-    Application.Goto wb.Worksheets("Fail Address").cells(row, 1), True
-Done:
-    Application.EnableEvents = oldEvents
-End Sub
-
 Public Sub BLK_PrepareEmptyTemplate(ByVal wb As Workbook)
     Dim ws As Worksheet, cfg As Worksheet, locations As Worksheet, index As Worksheet
     Dim tnos As Object, labels As Object, tno As Variant, header() As Variant, i As Long, width As Long, message As String
