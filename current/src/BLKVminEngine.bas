@@ -2376,6 +2376,7 @@ End Sub
 
 Public Sub BLK_SizeOutput(ByVal ws As Worksheet)
     Dim lastRow As Long, lastCol As Long, c As Long, firstData As Long, height As Double, maximum As Double
+    If ws.name = "W&R Performance" Or ws.name = "Scan W-R Performance" Then Exit Sub
     If ws.name = "BLK Distribution" Or ws.name = "BLK Pattern Distribution" Or ws.name = "Cat Wafer Map" Then Exit Sub
     If ws.name = "Config" Or ws.name = "Import Index" Or ws.name = "FBC by BLK" Or ws.name = "Fail Analysis" Or ws.name = "Import Info" Or ws.name = "Wafer Maps" Then Exit Sub
     If right$(ws.name, 8) = "Fail Map" Or ws.name = "FailBLK Loss Map" Or ws.name = "W&R Map" Then Exit Sub

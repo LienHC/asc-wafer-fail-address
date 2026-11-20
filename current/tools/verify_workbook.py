@@ -3,8 +3,26 @@ import sys
 from zipfile import ZipFile
 from xml.etree import ElementTree as ET
 from oletools.olevba import VBA_Parser
-r=Path(__file__).resolve().parents[1];p=Path(sys.argv[1]) if len(sys.argv)>1 else r/'templates/SRAM Extra BLK Failure  Analysis_v13.2.xlsm'
+r=Path(__file__).resolve().parents[1];p=Path(sys.argv[1]) if len(sys.argv)>1 else r/'templates/SRAM Extra BLK Failure  Analysis_v13.3.xlsm'
 v=VBA_Parser(str(p));modules={n:c for _,_,n,c in v.extract_macros()};v.close()
+if p.name.endswith('Analysis_v13.3.xlsm'):
+    baseline = r / 'templates/SRAM Extra BLK Failure  Analysis_v13.2.xlsm'
+    parser = VBA_Parser(str(baseline))
+    try:
+        expected = {name: code for _, _, name, code in parser.extract_macros()}
+    finally:
+        parser.close()
+    for name in ('WRPerformance.bas', 'BLKVminEngine.bas'):
+        expected[name] = (r / 'src' / name).read_text().replace('\n', '\r\n')
+    assert modules == expected, 'VBA modules differ from v13.2 plus the W/R Performance update'
+    with ZipFile(baseline) as original, ZipFile(p) as updated:
+        assert updated.testzip() is None
+        assert original.namelist() == updated.namelist()
+        changed = {part for part in original.namelist() if original.read(part) != updated.read(part)}
+        assert changed == {'xl/vbaProject.bin'}, changed
+    print('PASS XLSM v13.3: workbook parts preserved and updated W/R Performance VBA embedded.')
+    sys.exit(0)
+
 assert len(modules)==11
 for prefix,file in [('ImportFailAddresses.','ImportThreeASC_BLKVmin.bas'),('BLKVminEngine.','BLKVminEngine.bas')]:
  expected=(r/'src'/file).read_text().strip()
