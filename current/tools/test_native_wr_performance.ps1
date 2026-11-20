@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference='Stop';$app=$null;$book=$null
 function Check($ok,$message){if(-not $ok){throw $message}}
 function Run-Report {
- try{$app.Run("'"+$book.Name+"'!WRPerformance.BuildReport",$book) | Out-Null}
+ try{$app.Run("'"+$book.Name+"'!WRTestHarness.BuildReport",$book) | Out-Null}
  catch [System.ArgumentNullException]{if($_.Exception.ParamName -ne 'ptr'){throw}}
 }
 function Add-Map($wt,$pattern,$x,$category,$value=1) {
@@ -23,6 +23,18 @@ function Write-Map {
 try{
  $app=New-Object -ComObject Excel.Application;$app.Visible=$false;$app.DisplayAlerts=$false;$app.EnableEvents=$false
  $book=$app.Workbooks.Open($Workbook,0,$false)
+ # Option Private Module cannot be called through Application.Run after a native
+ # Excel save. Use a public bridge in this unsaved test instance only.
+ $bridge=$book.VBProject.VBComponents.Add(1)
+ $bridge.Name='WRTestHarness'
+ $bridge.CodeModule.AddFromString(@'
+Public Sub BuildReport(ByVal wb As Workbook)
+    WRPerformance.BuildReport wb
+End Sub
+Public Sub Invalidate(ByVal wb As Workbook)
+    WRPerformance.Invalidate wb
+End Sub
+'@)
  $index=$book.Worksheets.Item('Import Index');$loc=$book.Worksheets.Item('Chip Locations')
  $loc.UsedRange.ClearContents()
  for($i=1;$i -le 36;$i++){$loc.Cells.Item($i+1,1).Value2=[double]$i;$loc.Cells.Item($i+1,2).Value2=[double]0}
@@ -91,23 +103,23 @@ try{
  Check ($ws.Range('A6').Value2 -eq "March`nW/R Performance") 'March did not output'
  Check ($ws.Range('D3:O3').NumberFormat -eq '0.00%') 'Percentage format'
  Check ($ws.Range('D3').Text -eq '50.00%') 'Extra count text found'
- foreach($address in @('A1:O3','A82:D103')){
+ foreach($address in @('A1:O3','A87:D108')){
   $table=$ws.Range($address)
   Check ($table.Font.Name -eq 'Calibri' -and $table.Font.Size -eq 11) "Font for $address"
   Check ($table.HorizontalAlignment -eq -4108 -and $table.VerticalAlignment -eq -4108) "Center alignment for $address"
  }
  Check ($ws.Range('L3').Value2 -eq '-' -and $ws.ChartObjects().Count -eq 5) 'Missing Pattern/WT panel or unexpected chart count'
- Check ($ws.Range('A82').Value2 -eq 'March / WT2 | Fail Count Detail') 'Detailed WT/Pattern title'
- Check ($ws.Range('B83').Value2 -eq 'Fail Count' -and $ws.Range('C83').Value2 -eq 'DC Pass Chips') 'Detail headers'
- Check ($ws.Range('A92').Value2 -eq 'W + R') 'W + R must be distinct from RW'
- Check ($ws.Range('A102').Value2 -eq 'W + R + RW + X') 'Four-mode combination label'
- for($r=84;$r -le 103;$r++){
-  $expected=if($r -le 85){9}elseif($r -le 87){8}elseif($r -eq 92){2}elseif($r -eq 103){14}else{1}
+ Check ($ws.Range('A87').Value2 -eq 'March / WT2 | Fail Count Detail') 'Detailed WT/Pattern title'
+ Check ($ws.Range('B88').Value2 -eq 'Fail Count' -and $ws.Range('C88').Value2 -eq 'DC Pass Chips') 'Detail headers'
+ Check ($ws.Range('A97').Value2 -eq 'W + R') 'W + R must be distinct from RW'
+ Check ($ws.Range('A107').Value2 -eq 'W + R + RW + X') 'Four-mode combination label'
+ for($r=89;$r -le 108;$r++){
+  $expected=if($r -le 90){9}elseif($r -le 92){8}elseif($r -eq 97){2}elseif($r -eq 108){14}else{1}
   Check ($ws.Cells.Item($r,2).Value2 -eq $expected) "Incorrect numerator on detail row $r"
   Check ($ws.Cells.Item($r,3).Value2 -eq 30) "Incorrect denominator on detail row $r"
   Check ($ws.Cells.Item($r,4).Value2 -eq ($expected / 30.0)) "Incorrect share on detail row $r"
  }
- Check ($ws.Range('D102').Text -eq '3.33%') 'Permutation percentage format'
+ Check ($ws.Range('D107').Text -eq '3.33%') 'Permutation percentage format'
  Check ($ws.ChartObjects(4).Chart.ChartTitle.Text -like 'March / WT2*30 DC Pass Chips') 'Chart uses the matching panel and denominator'
  Check ($ws.ChartObjects(4).Chart.SeriesCollection(1).Points().Count -eq 19) 'Chart must show four independent metrics and 15 combinations'
  $scan=$book.Worksheets.Item('Scan W-R Performance')
@@ -141,11 +153,17 @@ try{
  Write-Map
  Run-Report
  Check ($ws.Range('C3').Value2 -eq 0 -and $ws.Range('D3').Value2 -eq '-') 'Division by zero'
- Check ($ws.Range('B12').Value2 -eq 0 -and $ws.Range('C12').Value2 -eq 0 -and $ws.Range('D12').Value2 -eq '-') 'Zero denominator detail'
+ Check ($ws.Range('B17').Value2 -eq 0 -and $ws.Range('C17').Value2 -eq 0 -and $ws.Range('D17').Value2 -eq '-') 'Zero denominator detail'
  Check ($scan.Range('C3').Value2 -eq 0 -and $scan.Range('D3').Value2 -eq '-' -and $scan.Range('D4').Value2 -eq 0) 'Scan zero denominator'
- try{$app.Run("'"+$book.Name+"'!WRPerformance.Invalidate",$book) | Out-Null}catch [System.ArgumentNullException]{if($_.Exception.ParamName -ne 'ptr'){throw}}
+ try{$app.Run("'"+$book.Name+"'!WRTestHarness.Invalidate",$book) | Out-Null}catch [System.ArgumentNullException]{if($_.Exception.ParamName -ne 'ptr'){throw}}
  Check ($ws.Range('A1').Value2 -like 'Source updated.*' -and $ws.Range('D3').Value2 -eq $null) 'Stale report invalidation'
  Check ($ws.ChartObjects().Count -eq 0) 'Invalidation retained stale charts'
  Check ($scan.Range('A1').Value2 -like 'Source updated.*' -and $scan.Range('D4').Value2 -eq $null) 'Stale Scan report invalidation'
+ $book.Close($false);$book=$null
+ $book=$app.Workbooks.Open($Output,0,$true)
+ $ws=$book.Worksheets.Item('W&R Performance')
+ Check ($ws.Range('D3').Value2 -eq .5 -and $ws.ChartObjects().Count -eq 5) 'Saved report did not survive reopen'
+ Check ($book.Worksheets.Item('Scan W-R Performance').Range('C9').Value2 -eq 33) 'Saved Scan report did not survive reopen'
  Write-Output 'PASS 3 WT / 2 Pattern percentages, six DC Cats, per-chip/category deduplication, zero counts, overlap, all 15 combinations, detail counts and charts, per-WT Scan gray counts and seven metrics, missing panels, rerun, zero denominator and stale invalidation.'
+ Write-Output 'PASS saved report reopened in native Excel with counts and charts intact.'
 }finally{if($book){$book.Close($false)};if($app){$app.Quit()}}
