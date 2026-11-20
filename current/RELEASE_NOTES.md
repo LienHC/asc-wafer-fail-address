@@ -1,10 +1,14 @@
 # v13.4
 
-修復 Excel 開啟時「載入 WRPerformance 時發生錯誤」：以原生 Excel 重建 VBA 專案並只替換 `xl/vbaProject.bin`。保留全部 19 個模組的程式邏輯、原有工作表、按鈕及設定。
+## 2026-11-20 — VBA 載入修復與執行驗證
 
-已在本機 Excel 16.0 實際驗證 W/R 與 Scan W-R 報表、3 WT／2 Pattern、15 種組合、灰底排除、重跑、零分母、報表失效清理、儲存重開及 Source Row 選取事件。測試採合成資料，尚未以公司正式 ASC 執行完整匯入。
-
-修正 Source Row 選取事件的 VBA 跨模組編譯錯誤。選取 Fail Analysis 或 Chip Fail Details 的來源列會跳到 Fail Address 對應列。
+- **修復**：開啟範本時出現「載入 WRPerformance 時發生錯誤」。以原生 Excel 重建 VBA 專案，只替換 `xl/vbaProject.bin`；保留全部 19 個模組的程式邏輯，以及原有工作表、按鈕與設定。
+- **Source Row**：保留選取 Fail Analysis／Chip Fail Details 的來源列，跳到 Fail Address 對應列的功能。
+- **測試工具**：修正 W/R 原生測試對 `Option Private Module` 的呼叫方式與過期列號；靜態檢查接受 Excel 自動調整的識別字大小寫與空白，仍精確比對字串常值。
+- **原生 Excel 16.0 驗證通過**：W/R 與 Scan W-R 報表、3 WT／2 Pattern、15 種精確組合、灰底排除、重跑、零分母、報表失效清理及 Source Row 選取事件。
+- **儲存重開通過**：報表數值與圖表保持完整；靜態檢查確認非 VBA 活頁簿內容未變更。
+- **驗證範圍**：採合成資料，尚未以公司正式 ASC 執行完整匯入。
+- **合併紀錄**：[PR #2](https://github.com/LienHC/asc-wafer-fail-address/pull/2) 已合併至 `main`；修復提交 [72d6228](https://github.com/LienHC/asc-wafer-fail-address/commit/72d622812231006eac27e8f24a102056830edb6d)，合併提交 [42d4860](https://github.com/LienHC/asc-wafer-fail-address/commit/42d486098c49a5b28496b418caf0d74daceda814)。
 
 ---
 
