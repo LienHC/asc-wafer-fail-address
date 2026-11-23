@@ -6,6 +6,11 @@
 
 「匯入並分析」與「Refresh Maps」完成後自動更新兩張報表。詳見 [W/R Performance 說明](docs/WR_PERFORMANCE.md)。
 
+## Address Data Auto output v1.9
+
+批次匯出完成後會顯示檔案數與運行時間。開啟匯出的 `.xlsm` 並啟用巨集，即可雙擊 Cat Wafer Map 上的 Chip 查看失效明細。[下載 Excel](templates/Address%20Data%20Auto%20output_v1.9.xlsm?raw=true) · [操作說明](templates/README.md#address-data-auto-output-v19)
+
+
 ---
 
 # Wafer ASC 分析 v0.26.0

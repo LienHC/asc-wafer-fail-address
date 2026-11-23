@@ -32,6 +32,17 @@
 
 驗證採合成資料，尚未以公司正式 ASC 執行完整匯入；Excel 2016 實機相容性亦未另行驗證。
 
+## Address Data Auto output v1.9
+
+[下載 v1.9（.xlsm）](Address%20Data%20Auto%20output_v1.9.xlsm?raw=true)
+
+1. 在 Windows 桌面版 Excel 開啟範本並啟用巨集，選取 ASC 檔案執行批次匯出。完成視窗顯示輸出檔數與運行時間。有警告或錯誤時，詳細資訊在 `Config!O`。
+2. 開啟匯出的 `.xlsm` 並啟用巨集。在 **Cat Wafer Map** 雙擊 Chip，開啟 **Chip Fail Details**。
+3. 檢查各 WT／TNO 的測試項目、Fail BLK 數及 FBC 加總，再查看 BLK／WL／BL／IO 與來源列。覆蓋狀態以同一 WT／TNO／BLK 的 FBC 與已記錄 Address 數比較，可辨識部分記錄、完全缺少 Address，以及 FBC 缺失。
+
+`Config!K12` 可設定 Fail Address H 欄的 BL=0 模式。已以 WT1／WT2 模擬 ASC 驗證批次匯出、結果檔重新開啟及 Chip 明細。
+
+
 ## Address Data Auto output v1.8
 
 [下載 v1.8（.xlsm）](Address%20Data%20Auto%20output_v1.8.xlsm?raw=true)
