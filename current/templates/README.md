@@ -1,6 +1,6 @@
 # Excel 範本下載與更新紀錄
 
-更新日期：2026-11-20
+更新日期：2026-11-23
 
 ## 最新版：SRAM Extra BLK Failure Analysis v13.4
 
@@ -31,6 +31,17 @@
 - 靜態核對全部 19 個模組及非 VBA 活頁簿內容。
 
 驗證採合成資料，尚未以公司正式 ASC 執行完整匯入；Excel 2016 實機相容性亦未另行驗證。
+
+## Address Data Auto output v1.8
+
+[下載 v1.8（.xlsm）](Address%20Data%20Auto%20output_v1.8.xlsm?raw=true)
+
+Fail Address 的 G 欄 `BL=1` 沿用原 Cat 數值，H 欄 `BL=0` 顯示所選模式的分類，TNO 從 I 欄開始。
+
+- **First Fail Cat（預設）** 從第一個出現 Fail Bit 的站點取得 `Config!G` 的 Cat。
+- **C20 in WT2/WT3** 若 WT1 Cat 不屬於 C1／C2，且該 Address 首次出現在 WT2／WT3，H 欄輸出 20。WT1 已出現的 Address 沿用首次 Fail Cat。
+
+在 `Config!K12` 選擇模式後執行批次匯出。已用 WT1／WT2 模擬 ASC 確認兩種模式分別輸出 9 與 20。
 
 ## 其他範本與歷史版本
 
