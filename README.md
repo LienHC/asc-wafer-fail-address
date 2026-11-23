@@ -6,6 +6,10 @@
 
 「匯入並分析」與「Refresh Maps」完成後自動更新兩張報表。詳見 [W/R Performance 說明](current/docs/WR_PERFORMANCE.md)。
 
+## Address Data Auto output v1.8
+
+批次匯出的 Fail Address 新增 BL=0 分類，可從 `Config!K12` 切換模式。[下載 Excel](current/templates/Address%20Data%20Auto%20output_v1.8.xlsm?raw=true) · [操作說明](current/templates/README.md#address-data-auto-output-v18)
+
 ---
 
 # Wafer ASC 分析 v0.26.0
