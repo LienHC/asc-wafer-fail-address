@@ -330,7 +330,8 @@ Public Function BLK_BuildComparison(ByVal wb As Workbook) As String
     BLK_SizeOutput ws
     ws.Activate
     With Application.ActiveWindow
-        .DisplayGridlines = False: .FreezePanes = False: .SplitColumn = 3: .SplitRow = 2: .FreezePanes = True
+        .DisplayGridlines = False
+        TryFreezeOutputPanes ws, Application.ActiveWindow, 3, 2
     End With
     source.Visible = xlSheetVeryHidden
     Exit Function
@@ -339,6 +340,25 @@ Failed:
 End Function
 
 
+Private Sub TryFreezeOutputPanes(ByVal ws As Worksheet, ByVal view As Window, ByVal frozenColumns As Long, ByVal frozenRows As Long)
+    If view Is Nothing Then Exit Sub
+    On Error GoTo FreezeUnavailable
+    view.FreezePanes = False
+    ws.Range("A1").Select
+    view.ScrollRow = 1
+    view.ScrollColumn = 1
+    view.SplitColumn = frozenColumns
+    view.SplitRow = frozenRows
+    view.FreezePanes = True
+    Exit Sub
+
+FreezeUnavailable:
+    'The output is valid even when this Excel window cannot freeze panes.
+    On Error Resume Next
+    view.FreezePanes = False
+    view.Split = False
+End Sub
+
 Private Function BuildTNORanks(ByVal values As Variant, ByVal ranks As Object, ByVal rowCount As Long) As Variant
     Dim result() As Variant, i As Long, value As Variant, key As String
     ReDim result(1 To rowCount, 1 To 1)
@@ -2816,7 +2836,8 @@ Public Sub BLK_BuildUnifiedMaps(ByVal wb As Workbook)
 Finish:
     ws.Activate
     With Application.ActiveWindow
-        .DisplayGridlines = False: .FreezePanes = False: .SplitRow = 5: .SplitColumn = 0: .FreezePanes = True
+        .DisplayGridlines = False
+        TryFreezeOutputPanes ws, Application.ActiveWindow, 0, 5
         .ScrollRow = 6: .ScrollColumn = 1: .Zoom = 80
     End With
     RevealMapSources wb, False

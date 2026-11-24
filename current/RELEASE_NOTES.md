@@ -1,3 +1,10 @@
+# v13.6
+
+- 修正 FreezePanes 1004。若 Excel 無法凍結窗格，已產生的 FBC 比對表仍可用，並繼續更新 Wafer Maps 與 W/R Performance。
+- 已用 WT1～WT3 模擬 ASC 驗證正常匯入與模擬 1004 兩種情況。
+
+---
+
 # v13.4
 
 ## 2026-11-20 — VBA 載入修復與執行驗證
